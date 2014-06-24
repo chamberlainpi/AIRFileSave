@@ -18,7 +18,7 @@ The way this works - AIRFileSave is an AIR app that uses a LocalConnection appro
 
 ![How it works](https://raw.githubusercontent.com/bigp/AIRFileSave/master/images/afs_how_it_works.png)
 
-You ask: "If this is using LocalConnections, do I need to setup the client LocalConnection to communicate with the AIR app?" - No worries! You don't have to setup a bunch of cumbersome LocalConnection details yourself in your project! This is handled for you in the client SWC, which you can create from the AIR app directly:
+You ask: "**If this is using LocalConnections, do I need to setup the client LocalConnection to communicate with the AIR app?**" - No worries! You don't have to setup a bunch of cumbersome LocalConnection details yourself in your project! This is handled for you in the client SWC, which you can create from the AIR app directly:
 
 ![How it works](https://raw.githubusercontent.com/bigp/AIRFileSave/master/images/afs_how_it_looks.png)
 
