@@ -48,3 +48,15 @@ Usage of Client SWC
     
     //Last but not least, here's a way to call a command (Batch) file: (not fully implemented yet)
     theClient.startCommand( "theCommand.bat", ["Hello", "World"], onCommandCompleted);
+
+
+Demo
+====
+
+You can find a pre-release *.EXE installer on this GitHub page:
+https://github.com/bigp/AIRFileSave/releases
+
+Also, once you have the AIR app running, you can try this online demo to see if it writes a plain text file under:
+*C:\temp.txt*
+
+Try it: http://pierrechamberlain.ca/others/airfilesaveclient/index.html
