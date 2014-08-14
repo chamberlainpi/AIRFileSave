@@ -17,6 +17,7 @@ package {
 	public class AIRFileServer extends AIRFileServerUI {
 		private var proc:NativeProcess;
 		private var procResult:String;
+		private var _currentFileMode:String;
 		
 		protected var _connOutName:String;
 		protected var _canUseCommands:Boolean = false;
@@ -75,9 +76,58 @@ package {
 			log("Standard data: " + procResult);
 		}
 		
+		private static function str2bytes(pString:String):ByteArray {
+			var bytes:ByteArray = new ByteArray();
+			bytes.writeUTFBytes(pString);
+			return bytes;
+		}
+		
+		private function writeBytesToFile(pFilePath:String, pData:ByteArray, pWriteMode:String):void {
+			TimerUtils.delayKill(logClear);
+			
+			var file:File;
+			if (pFilePath.indexOf(":") === 1) {
+				file = new File(pFilePath);
+			} else {
+				file = File.desktopDirectory.resolvePath(pFilePath);
+			}
+			
+			pData.position = 0;
+			
+			pFilePath = file.nativePath;
+			_currentPath = pFilePath;
+			_currentFileMode = pWriteMode;
+			var fileStream:FileStream = new FileStream();  
+			fileStream.addEventListener(Event.CLOSE, onFileComplete);
+			fileStream.openAsync(file, pWriteMode);
+			fileStream.writeBytes(pData);
+			fileStream.close();
+		}
+		
+		private function onFileComplete(e:Event):void {
+			var action:String = _currentFileMode == FileMode.APPEND ? "Appended: " : "Written: ";
+			log(action + _currentPath);
+			TimerUtils.delay(2500, logClear);
+		}
+		
+		public function saveText(pFilePath:String, pContent:String):void {
+			writeBytesToFile(pFilePath, str2bytes(pContent), FileMode.WRITE);
+		}
+		
+		public function appendText(pFilePath:String, pContent:String):void {
+			writeBytesToFile(pFilePath, str2bytes(pContent), FileMode.APPEND);
+		}
+		
+		public function saveBytes(pFilePath:String, pData:ByteArray):void {
+			writeBytesToFile( pFilePath, pData, FileMode.WRITE );
+		}
+		
+		public function appendBytes(pFilePath:String, pData:ByteArray):void {
+			writeBytesToFile( pFilePath, pData, FileMode.APPEND );
+		}
+		
 		public function listDirectory(pFilePath:String):void {
 			var file:File = resolvePath(pFilePath);
-			
 			
 			var theFiles:Array = file.getDirectoryListing();
 			var theResults:Array = [];
@@ -105,38 +155,6 @@ package {
 			var file:File = resolvePath(pFilePath);
 			file.deleteFile();
 			_conn.send(_connOutName, "receiveDeleteFile", file.nativePath);
-		}
-		
-		public function saveText(pFilePath:String, pContent:String):void {
-			var bytes:ByteArray = new ByteArray();
-			bytes.writeUTFBytes(pContent);
-			bytes.position = 0;
-			saveBytes(pFilePath, bytes);
-		}
-		
-		public function saveBytes(pFilePath:String, pData:ByteArray):void {
-			TimerUtils.delayKill(logClear);
-			
-			var file:File;
-			if (pFilePath.indexOf(":") === 1) {
-				file = new File(pFilePath);
-			} else {
-				file = File.desktopDirectory.resolvePath(pFilePath);
-			}
-			
-			pFilePath = file.nativePath;
-			_currentPath = pFilePath;
-			
-			var fileStream:FileStream = new FileStream();  
-			fileStream.addEventListener(Event.CLOSE, onFileComplete);
-			fileStream.openAsync(file, FileMode.WRITE);
-			fileStream.writeBytes(pData);
-			fileStream.close();
-		}
-		
-		private function onFileComplete(e:Event):void {
-			log("Written: " + _currentPath);
-			TimerUtils.delay(2500, logClear);
 		}
 	}
 	

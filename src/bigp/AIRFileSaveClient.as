@@ -76,11 +76,24 @@ package bigp {
 			_connOutput.send(_connName, "saveText", pFileName, pContent);
 		}
 		
+		public function appendText(pFileName:String, pContent:String):void {
+			if (pFileName.indexOf(":") === -1) pFileName = resolvePath(pFileName);
+			_lastURI = pFileName;
+			_connOutput.send(_connName, "appendText", pFileName, pContent);
+		}
+		
 		public function saveBytes(pFileName:String, pByteArray:ByteArray):void {
 			if (pFileName.indexOf(":") === -1) pFileName = resolvePath(pFileName);
 			_lastURI = pFileName;
 			pByteArray.position = 0;
 			_connOutput.send(_connName, "saveBytes", pFileName, pByteArray);
+		}
+		
+		public function appendBytes(pFileName:String, pByteArray:ByteArray):void {
+			if (pFileName.indexOf(":") === -1) pFileName = resolvePath(pFileName);
+			_lastURI = pFileName;
+			pByteArray.position = 0;
+			_connOutput.send(_connName, "appendBytes", pFileName, pByteArray);
 		}
 		
 		public function listDirectory( pDir:String, pOnComplete:Function ):void {
