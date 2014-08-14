@@ -1,6 +1,14 @@
 AIRFileSave
 ===========
 
+**Latest Updates:**
+
+You can now *Append* data to a file (instead of having to remember the whole file each time. This becomes useful for writing continuous logs, especially automated projects.
+
+See what else has changed: https://github.com/bigp/AIRFileSave#updates
+
+----------------------
+
 Ever wanted to dynamically write local files from a Flash game/app at runtime (without server-side scripts)? This handy AIR app can serve as a 3rd-arm for your Flash projects that needs to dynamically update JSON, TXT, or even ByteArray files. Also useful for launching NativeProcess (batch, commands, etc.)
 
 ----------------------
@@ -60,3 +68,12 @@ Also, once you have the AIR app running, you can try this online demo to see if 
 *C:\temp.txt*
 
 Try it: http://pierrechamberlain.ca/others/airfilesaveclient/index.html
+
+Updates
+======
+
+(2014-08-14)
+
+- Added "**appendText()**" and "**appendBytes()**" methods to the Client and Server.
+- Refactored so that appendText/appendBytes/saveText/saveBytes reuse the same core method but only differ in which **FileMode** (APPEND vs. WRITE) type they use.
+
