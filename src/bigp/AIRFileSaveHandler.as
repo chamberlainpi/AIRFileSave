@@ -72,7 +72,8 @@ package bigp {
 				case "json": fileType = TYPE_02_JSON; break;
 				case "jpg":
 				case "png":
-				case "gif": fileType = TYPE_03_IMAGE; break
+				case "gif": fileType = TYPE_03_IMAGE; break;
+				default: fileType = TYPE_00_UNKNOWN; break;
 			}
 			
 			if (fileType===TYPE_02_JSON) {

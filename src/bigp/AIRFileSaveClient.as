@@ -18,7 +18,7 @@ package bigp {
 		private var _resolvedURI:String;
 		private var _receiver:clsAIRClientReceiver;
 		
-		public function AIRFileSaveClient() {
+		public function AIRFileSaveClient(pSecureLoaderInfo:LoaderInfo=null) {
 			_connOutput = createConnection();
 			_connOutput.addEventListener(StatusEvent.STATUS, onStatus);
 			
@@ -28,7 +28,7 @@ package bigp {
 			_receiver._connInput.connect(_connSimpleName);
 			
 			//Resolve the local folder:
-			var theLoaderInfo:LoaderInfo = LoaderInfo.getLoaderInfoByDefinition(ApplicationDomain.currentDomain);
+			var theLoaderInfo:LoaderInfo = pSecureLoaderInfo || LoaderInfo.getLoaderInfoByDefinition(ApplicationDomain.currentDomain);
 			var thePath:String = theLoaderInfo.url;
 			var thePathArr:Array = thePath.replace("file:///", "").split("/");
 			thePathArr.pop();
@@ -104,7 +104,7 @@ package bigp {
 		public function deleteFile( pDir:String, pOnComplete:Function ):void {
 			_receiver._onDeleteDirectory = pOnComplete;
 			if (pDir.indexOf(":") === -1) pDir = resolvePath(pDir);
-			_connOutput.send(_connName, "deleteDirectory", pDir);
+			_connOutput.send(_connName, "deleteFile", pDir);
 		}
 		
 		public function startCommand( pCommand:String, pArgs:Array, pOnComplete:Function ):void {
@@ -128,6 +128,14 @@ internal class clsAIRClientReceiver {
 	
 	public function clsAIRClientReceiver(pClient:AIRFileSaveClient) {
 		client = pClient;
+	}
+	
+	public function resetCallbacks():void {
+		_onListDirectory = null;
+		_onCreateDirectory = null;
+		_onDeleteDirectory = null;
+		_onDeleteFile = null;
+		_onStartCommand = null;
 	}
 	
 	public function receiveListDirectory( pFileNames:Array ):void {
