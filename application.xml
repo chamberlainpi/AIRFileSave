@@ -2,7 +2,7 @@
 <application xmlns="http://ns.adobe.com/air/application/4.0">
 	
 	<id>AIRFileSave</id> 
-	<versionNumber>1.02</versionNumber> 
+	<versionNumber>1.05</versionNumber> 
 	<filename>AIRFileSave</filename> 
 	
 	<name>AIRFileSave</name> 
@@ -19,7 +19,7 @@
 		<maximizable>true</maximizable> 
 		<resizable>true</resizable> 
 	</initialWindow> 
-	<supportedProfiles>extendedDesktop</supportedProfiles>
+	<supportedProfiles>desktop</supportedProfiles>
 	<!-- 
 	<supportedProfiles>desktop extendedDesktop</supportedProfiles>
 	More options:

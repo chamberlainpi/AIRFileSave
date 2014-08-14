@@ -1,5 +1,7 @@
 package bigp {
 	import flash.display.LoaderInfo;
+	import flash.events.AsyncErrorEvent;
+	import flash.events.Event;
 	import flash.events.StatusEvent;
 	import flash.net.LocalConnection;
 	import flash.system.ApplicationDomain;
@@ -18,14 +20,23 @@ package bigp {
 		private var _resolvedURI:String;
 		private var _receiver:clsAIRClientReceiver;
 		
-		public function AIRFileSaveClient(pSecureLoaderInfo:LoaderInfo=null) {
-			_connOutput = createConnection();
-			_connOutput.addEventListener(StatusEvent.STATUS, onStatus);
-			
-			_receiver = new clsAIRClientReceiver(this);
-			_receiver._connInput = createConnection();
-			_receiver._connInput.client = _receiver;
-			_receiver._connInput.connect(_connSimpleName);
+		internal var _isConnected:Boolean = false;
+		
+		public var whenOnConnection:Function;
+		
+		public function AIRFileSaveClient(pSecureLoaderInfo:LoaderInfo = null) {
+			try {
+				_connOutput = createConnection();
+				_connOutput.addEventListener(StatusEvent.STATUS, onStatus);
+				
+				_receiver = new clsAIRClientReceiver(this);
+				_receiver._connInput = createConnection();
+				_receiver._connInput.client = _receiver;
+				_receiver._onCheckConnect = onConnectionDetected;
+				_receiver._connInput.connect(_connSimpleName);
+				
+				_connOutput.send(_connName, _lastURI = "checkConnection");
+			} catch (err:Error) {}
 			
 			//Resolve the local folder:
 			var theLoaderInfo:LoaderInfo = pSecureLoaderInfo || LoaderInfo.getLoaderInfoByDefinition(ApplicationDomain.currentDomain);
@@ -34,6 +45,11 @@ package bigp {
 			thePathArr.pop();
 			_localFolder = unescape( thePathArr.join("/") ).replace("|", ":") + "/";
 			//trace(_localFolder);
+		}
+		
+		private function onConnectionDetected():void {
+			_isConnected = true;
+			if(whenOnConnection!=null) whenOnConnection(true);
 		}
 		
 		private function createConnection():LocalConnection {
@@ -46,7 +62,9 @@ package bigp {
 		
 		private function onStatus(e:StatusEvent):void {
 			if (e.level === "error") {
-				trace("[AIRFileSaveClient] Are you sure the path is valid AND the AIRFileSave app is running?\nValid? " + _lastURI);
+				trace("[AIRFileSaveClient] Are you sure the path is valid AND the AIRFileSave app is running?\n--Is the command valid? '" + _lastURI + "'");
+				_isConnected = false;
+				if (whenOnConnection != null) whenOnConnection(false);
 			}
 		}
 		
@@ -125,6 +143,8 @@ package bigp {
 			if (pCommand.indexOf(":") === -1) pCommand = resolvePath(pCommand);
 			_connOutput.send(_connName, "startCommand", pCommand, pArgs);
 		}
+		
+		public function get isConnected():Boolean { return _isConnected; }
 	}
 }
 import bigp.AIRFileSaveClient;
@@ -133,6 +153,7 @@ import flash.net.LocalConnection;
 internal class clsAIRClientReceiver {
 	public var client:AIRFileSaveClient;
 	internal var _connInput:LocalConnection;
+	internal var _onCheckConnect:Function;
 	internal var _onListDirectory:Function;
 	internal var _onCreateDirectory:Function;
 	internal var _onDeleteDirectory:Function;
@@ -144,11 +165,16 @@ internal class clsAIRClientReceiver {
 	}
 	
 	public function resetCallbacks():void {
+		_onCheckConnect = null;
 		_onListDirectory = null;
 		_onCreateDirectory = null;
 		_onDeleteDirectory = null;
 		_onDeleteFile = null;
 		_onStartCommand = null;
+	}
+	
+	public function receiveCheckConnection():void {
+		if(_onCheckConnect != null) _onCheckConnect();
 	}
 	
 	public function receiveListDirectory( pFileNames:Array ):void {

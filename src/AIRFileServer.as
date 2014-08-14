@@ -15,6 +15,9 @@ package {
 	 * @author Pierre Chamberlain
 	 */
 	public class AIRFileServer extends AIRFileServerUI {
+		[Embed(source="../application.xml", mimeType="application/octet-stream")]
+		public static const APPLICATION_XML:Class;
+		
 		private var proc:NativeProcess;
 		private var procResult:String;
 		private var _currentFileMode:String;
@@ -26,10 +29,12 @@ package {
 		public function AIRFileServer():void {
 			super();
 			
+			var xApp:XML = XML(new APPLICATION_XML());
+			log("version: " + xApp.children()[1] );
 			_connOutName = "localhost:" + _connShortName;
 			
 			if (!NativeProcess.isSupported) {
-				log("Native Process not supported.");
+				log("Native Process not supported at the moment (only works in native install).");
 				return;
 			} else {
 				_canUseCommands = true;
@@ -108,6 +113,12 @@ package {
 			var action:String = _currentFileMode == FileMode.APPEND ? "Appended: " : "Written: ";
 			log(action + _currentPath);
 			TimerUtils.delay(2500, logClear);
+		}
+		
+		public function checkConnection():void {
+			//Empty function just to safely execute the client "handshake" method.
+			log("New client connection detected.");
+			_conn.send(_connOutName, "receiveCheckConnection");
 		}
 		
 		public function saveText(pFilePath:String, pContent:String):void {

@@ -14,7 +14,7 @@ package  {
 	 * @author Pierre Chamberlain
 	 */
 	public class MainTest extends Sprite {
-		private var writer:AIRFileSaveClient;
+		private var client:AIRFileSaveClient;
 		private var fileHandler:AIRFileSaveHandler;
 		
 		public function MainTest() {
@@ -26,8 +26,8 @@ package  {
 		private function init(e:Event=null):void {
 			e && removeEventListener(Event.ADDED_TO_STAGE, init);
 			
-			writer = new AIRFileSaveClient();
-			fileHandler = writer.open("test.json", onLoaded, onError);
+			client = new AIRFileSaveClient();
+			fileHandler = client.open("test.json", onLoaded, onError);
 			stage.addEventListener(MouseEvent.CLICK, onClick);
 		}
 		
@@ -36,7 +36,7 @@ package  {
 		}
 		
 		private function onLoaded():void {
-			trace(fileHandler.data);
+			trace("fileHandler: " + fileHandler.data);
 		}
 		
 		private function onClick(e:MouseEvent):void {
@@ -52,7 +52,7 @@ package  {
 			*/
 			
 			//writer.listDirectory("../", onFileNames);
-			writer.startCommand("test.bat", ["hello", "world"], onStartCommandDone);
+			client.startCommand("test.bat", ["hello", "world"], onStartCommandDone);
 		}
 		
 		private function onStartCommandDone(pResult:String):void {
