@@ -3,7 +3,7 @@ AIRFileSave
 
 **Latest Updates:**
 
-You can now *Append* data to a file (instead of having to remember the whole file each time. This becomes useful for writing continuous logs, especially automated projects.
+You can now *Append* data to a file (instead of having to remember the whole file each time). This becomes useful for writing continuous logs, especially automated projects.
 
 See what else has changed: https://github.com/bigp/AIRFileSave#updates
 
