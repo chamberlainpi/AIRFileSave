@@ -22,7 +22,6 @@ package {
 		private var procResult:String;
 		private var _currentFileMode:String;
 		
-		protected var _connOutName:String;
 		protected var _canUseCommands:Boolean = false;
 		
 		
@@ -31,14 +30,15 @@ package {
 			
 			var xApp:XML = XML(new APPLICATION_XML());
 			log("version: " + xApp.children()[1] );
-			_connOutName = "localhost:" + _connShortName;
+			_connectionName = "localhost:" + _connectionName;
 			
 			if (!NativeProcess.isSupported) {
-				log("Native Process not supported at the moment (only works in native install).");
-				return;
+				log("Native Process not supported at the moment.\n (only works in native install).");
 			} else {
 				_canUseCommands = true;
 			}
+			
+			log("Waiting for LocalConnections for file-writing requests...");
 		}
 		
 		public function startCommand( pCommandName:String, pArgs:Array ):NativeProcess {
@@ -69,7 +69,7 @@ package {
 		
 		private function onProcessExit(e:NativeProcessExitEvent):void {
 			log("Exit code: " + e.exitCode);
-			_conn.send(_connOutName, "receiveStartCommand", procResult);
+			_conn.send(_connectionName, "receiveStartCommand", procResult);
 		}
 		
 		private function onProcessError(e:ProgressEvent):void {
@@ -118,7 +118,11 @@ package {
 		public function checkConnection():void {
 			//Empty function just to safely execute the client "handshake" method.
 			log("New client connection detected.");
-			_conn.send(_connOutName, "receiveCheckConnection");
+			_conn.send(_connectionName, "receiveCheckConnection");
+		}
+		
+		public function maintainConnection():void {
+			_conn.send(_connectionName, "receiveMaintainConnection");
 		}
 		
 		public function saveText(pFilePath:String, pContent:String):void {
@@ -147,25 +151,25 @@ package {
 				theResults[theResults.length] = theFile.nativePath;
 			}
 			
-			_conn.send(_connOutName, "receiveListDirectory", theResults);
+			_conn.send(_connectionName, "receiveListDirectory", theResults);
 		}
 		
 		public function createDirectory(pFilePath:String):void {
 			var file:File = resolvePath(pFilePath);
 			file.createDirectory();
-			_conn.send(_connOutName, "receiveCreateDirectory", file.nativePath);
+			_conn.send(_connectionName, "receiveCreateDirectory", file.nativePath);
 		}
 		
 		public function deleteDirectory(pFilePath:String, pAndContent:Boolean):void {
 			var file:File = resolvePath(pFilePath);
 			file.deleteDirectory(pAndContent);
-			_conn.send(_connOutName, "receiveDeleteDirectory", file.nativePath);
+			_conn.send(_connectionName, "receiveDeleteDirectory", file.nativePath);
 		}
 		
 		public function deleteFile(pFilePath:String):void {
 			var file:File = resolvePath(pFilePath);
 			file.deleteFile();
-			_conn.send(_connOutName, "receiveDeleteFile", file.nativePath);
+			_conn.send(_connectionName, "receiveDeleteFile", file.nativePath);
 		}
 	}
 	

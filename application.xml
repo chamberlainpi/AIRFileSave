@@ -2,7 +2,7 @@
 <application xmlns="http://ns.adobe.com/air/application/4.0">
 	
 	<id>AIRFileSave</id> 
-	<versionNumber>1.05</versionNumber> 
+	<versionNumber>1.06</versionNumber> 
 	<filename>AIRFileSave</filename> 
 	
 	<name>AIRFileSave</name> 

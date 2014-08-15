@@ -23,7 +23,7 @@ package  {
 		private static var INST:AIRFileServerUI;
 		
 		protected var _label:TextField;
-		protected var _connShortName:String = "connection";
+		protected var _connectionName:String = "connection";
 		
 		protected var _currentPath:String;
 		protected var _conn:LocalConnection;
@@ -103,19 +103,17 @@ package  {
 		}
 		
 		protected function prepareLocalConnection():void {
-			log("Waiting for LocalConnections for file-writing requests:");
-			
 			_conn = new LocalConnection();
 			_conn.allowDomain("*");
 			_conn.allowInsecureDomain("*");
 			_conn.addEventListener(StatusEvent.STATUS, onStatus);
 			_conn.client = this;
-			_conn.connect(_connShortName);
+			_conn.connect(_connectionName);
 			_conn.client = this;
 		}
 		
 		private function onStatus(e:StatusEvent):void {
-			log("Connection Status: " + e.code);
+			if (e.code != null) log("Connection Status: " + e.code);
 		}
 		
 		protected function onSWCRoll(e:MouseEvent):void {
